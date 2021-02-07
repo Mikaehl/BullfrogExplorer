@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bullfrog Explorer", "BullfrogExplorer\Bullfrog Explorer.csproj", "{AFBFBD77-5D88-4457-8AAD-14F4BA5C4BC5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFBFBD77-5D88-4457-8AAD-14F4BA5C4BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFBFBD77-5D88-4457-8AAD-14F4BA5C4BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFBFBD77-5D88-4457-8AAD-14F4BA5C4BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFBFBD77-5D88-4457-8AAD-14F4BA5C4BC5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4E799174-9B1E-4449-9BD2-05C895D69627}
+	EndGlobalSection
+EndGlobal

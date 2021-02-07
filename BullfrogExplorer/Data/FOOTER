@@ -1,0 +1,4 @@
+BACKGROUND=ESC: Back to main menu | W/Left click: Previous picture | X/Right click: Next picture | F: Hide/Show footer
+ANIMATIONS=ESC: Back to main menu | W/Left click: Previous animation | X/Right click: Next animation | +/-: Speed | P: Start/Stop animation | N: Next frame | F: Hide/Show footer
+SPRITES=ESC: Back to main menu | W/Left click: Previous spritesheet | X/Right click: Next spritesheet | Up/Down/Left/Right/Home: Move spritesheet | F: Hide/Show footer 
+TEXTS=ESC: Back to main menu | W/Left click: Previous language | X/Right click: Next language | Left/Right/Home: Move texts | F: Hide/Show footer 

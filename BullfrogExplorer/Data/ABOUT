@@ -1,0 +1,16 @@
+[GAME_NAME]
+Version [GAME_RELEASE_VERSION_HIGH].[GAME_RELEASE_VERSION_LOW].[GAME_RELEASE_VERSION_MINOR] [GAME_RELEASE_NAME]
+(c) [GAME_COPYRIGHT]
+
+This is a resources explorer for the game Theme Park.
+
+Theme Park is a construction and management simulation video game developed by Bullfrog Productions and published 
+by Electronic Arts in 1994. The player designs and operates an amusement park, with the goal of making money and 
+creating theme parks worldwide. The game is the first instalment in Bullfrog's Theme series and their Designer Series.
+
+This program use some various documentation found on the internet  as well as some reverse engineering regarding the 
+files specifications from Bullfrog used in several games such as Theme Hospital and Syndicate.
+
+You need to obviously own the game to be able to see the resources.
+
+Some mysteries remain in the files, feel free to contact me if you know them better than me !
