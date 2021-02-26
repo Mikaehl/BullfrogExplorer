@@ -192,11 +192,13 @@ namespace BullfrogExplorer.Data
 
             #region ** SOUNDS **
             i = 0;
-            soundsFiles.Add(new SoundsFile(i++, "SNDS0-0.TAB", "SNDS0-1.DAT", "SNDS0-0"));
-            soundsFiles.Add(new SoundsFile(i++, "SNDS0-1.TAB", "SNDS0-1.DAT", "SNDS0-1"));
+            // 0-2 and 1-2 contains the 16bits 44.1Khz mono PCM raw samples.
+            // I don't know for the other but as they are at a lower quality, I will just not try to know.
+            //soundsFiles.Add(new SoundsFile(i++, "SNDS0-0.TAB", "SNDS0-1.DAT", "SNDS0-0"));
+            //soundsFiles.Add(new SoundsFile(i++, "SNDS0-1.TAB", "SNDS0-1.DAT", "SNDS0-1"));
             soundsFiles.Add(new SoundsFile(i++, "SNDS0-2.TAB", "SNDS0-2.DAT", "SNDS0-2"));
-            soundsFiles.Add(new SoundsFile(i++, "SNDS1-0.TAB", "SNDS1-0.DAT", "SNDS1-0"));
-            soundsFiles.Add(new SoundsFile(i++, "SNDS1-1.TAB", "SNDS1-1.DAT", "SNDS1-1"));
+            //soundsFiles.Add(new SoundsFile(i++, "SNDS1-0.TAB", "SNDS1-0.DAT", "SNDS1-0"));
+            //soundsFiles.Add(new SoundsFile(i++, "SNDS1-1.TAB", "SNDS1-1.DAT", "SNDS1-1"));
             soundsFiles.Add(new SoundsFile(i++, "SNDS1-2.TAB", "SNDS1-2.DAT", "SNDS1-2"));
             #endregion
 

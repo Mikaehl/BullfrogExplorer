@@ -20,7 +20,7 @@ namespace BullfrogExplorer.Engines
         private int approche = 1;
 
         public Vector2 position;
-        int height;
+        public int height;
         Color Color;
 
         Dictionary<char, int> fontDict = new Dictionary<char, int>();

@@ -32,5 +32,28 @@ namespace BullfrogExplorer.Data
 
         public static Credits credits = new Credits(822, new Vector2(65, 85));
 
+        public struct Sounds
+        {
+            public int index;
+            public Vector2 position;
+            public int currentIndex;
+            public int offset;
+            public TimeSpan delay;
+            public string background;
+
+            public Sounds(int i, Vector2 p)
+            {
+                this.index = i;
+                this.position = p;
+                this.currentIndex = i;
+                this.offset = 0;
+                this.delay = new TimeSpan(0, 0, 5);
+                this.background = "MMAP-0";
+            }
+        }
+
+        public static Sounds sounds = new Sounds(822, new Vector2(65, 85));
+
+
     }
 }

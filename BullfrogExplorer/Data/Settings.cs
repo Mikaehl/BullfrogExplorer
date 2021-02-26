@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 
 
@@ -32,6 +33,7 @@ namespace BullfrogExplorer.Data
         public static string Lang = "ENGLISH";
         public static string AnimationSerie = "MSTA-0.ANI";
         public static string mousePointerSpritesheet = "MPOINTER";
+        public static string soundsFile = "SNDS1-2";
 
         public static bool showFooter = true;
 
@@ -65,6 +67,9 @@ namespace BullfrogExplorer.Data
         public static bool spriteIndex = false;
 
         public static Point spritesheetViewport = new Point(0, 0);
+
+        public static int audiosampleRate = 44100;
+        public static AudioChannels audioChannels = AudioChannels.Mono;
 
         public struct Movement
         {

@@ -62,7 +62,9 @@ namespace BullfrogExplorer
             tiles,
             about,
             credits,
-            texts
+            texts,
+            sounds,
+            musics
         }
 
         struct FooterElement
@@ -97,6 +99,8 @@ namespace BullfrogExplorer
 
         Menu menu;
 
+        Menu soundsMenu;
+
         GameState gameState;
         ScreenState screenState;
 
@@ -120,6 +124,8 @@ namespace BullfrogExplorer
         List<Background> backgrounds = new List<Background>();
 
         List<Animations> animations = new List<Animations>();
+
+        List<Sounds> sounds = new List<Sounds>();
 
         Background back = new Background();
 
@@ -258,15 +264,18 @@ namespace BullfrogExplorer
             #endregion
 
             #region ** LOADCONTENT SOUNDS ** (NOT YET WORKING)
-                /* SOUNDS */
-           /*     Table snd = new Table(1);
-            string path = @"C: \Users\mik\source\repos\ThemePark Data\";
-            path = @"C:\Program Files (x86)\GOG Galaxy\Games\Theme Park\GAME\DATA\";
-            string file = @"SNDS0-0.TAB";
-            snd.LoadFile(Settings.datapath + file);
-            Sounds sounds = new Sounds();
-            file = @"SNDS0-0.DAT";
-            sounds.LoadFile(Settings.datapath + file, snd);*/
+            /* SOUNDS */
+           foreach (DataFiles.SoundsFile soundsFile in DataFiles.soundsFiles)
+            {
+                Sounds currentSoundsFile = new Sounds(Settings.audiosampleRate, Settings.audioChannels);
+                Table currentTab = new Table(1);
+
+                currentSoundsFile.Initialize(soundsFile.index, soundsFile.name);
+
+                currentTab.LoadFile(Settings.datapath + soundsFile.tabFile);
+                currentSoundsFile.LoadFile(Settings.datapath + soundsFile.datFile, currentTab);
+                sounds.Add(currentSoundsFile);
+            }
             #endregion
 
             #region ** LOADCONTENT ANIMATIONS **
@@ -380,7 +389,7 @@ namespace BullfrogExplorer
             List<Menu.MenuElement> menuList = new List<Menu.MenuElement>();
             string[] lines = System.IO.File.ReadAllLines(CONST.MAINMENUFILE);
                         
-            int c = 0;
+            int c = 1;
             foreach (string line in lines)
             {
                 string[] s = line.Split(',');
@@ -419,6 +428,30 @@ namespace BullfrogExplorer
                 footerList.Add(new FooterElement(f_s[0], f_s[1]));
             }
             #endregion
+
+            #region ** SOUNDS MENU **
+            /* MENU */
+
+
+            List<Menu.MenuElement> menusoundsList = new List<Menu.MenuElement>();
+            int i = 1;
+            int key = 65;
+            foreach (Sounds.SoundElement soundsElem in sounds.Find(x => x.name.Contains(Settings.soundsFile)).soundElements)
+            {
+                if (key > 65 + 25) key = 65;
+                if (soundsElem.name != "NULL.RAW")
+                {
+                    menusoundsList.Add(new Menu.MenuElement(i, Menu.MenuState.normal, soundsElem.name, i.ToString(),
+                        (Keys)Enum.ToObject(typeof(Keys), key++)));
+                    i++;
+                }
+            }
+
+            soundsMenu = new Menu(spritesSheets.Find(x => x.name.Contains("MFONT2")), menusoundsList, new Vector2(35, 35), 200, 120);
+            soundsMenu.SetColors(Color.DarkGray, Color.Gold, Color.LightGoldenrodYellow);
+            #endregion
+
+
 
         }
 
@@ -522,8 +555,15 @@ namespace BullfrogExplorer
             {
 
                 #region * MENU UPDATE *
-                switch (menu.Update(gameTime, mouseState, keyboardState))
+                switch (menu.GetLabel(menu.Update(gameTime, mouseState, keyboardState)))
                 {
+                    case "SOUNDS":
+                        gameState = GameState.playing;
+                        screenState = ScreenState.sounds;
+                        Settings.showFooter = true;
+                        oldTimeSpan = gameTime.TotalGameTime;
+                        break;
+
                     case "CREDITS":
                         gameState = GameState.playing;
                         screenState = ScreenState.credits;
@@ -898,19 +938,77 @@ namespace BullfrogExplorer
                                 }
                                 break;
                             #endregion
-                                
 
+                            #region ScreenState.Sounds
+                            case ScreenState.sounds:
+
+                                int smResult = soundsMenu.Update(gameTime, mouseState, keyboardState);
+                                if (smResult > 0)
+                                {
+                                    if (keyboardState != oldKeyboardState || mouseState != oldMouseState)
+                                        sounds.Find(x => x.name.Contains(Settings.soundsFile)).
+                                            soundElements.Find(y => y.name.Contains(soundsMenu.GetText(smResult))).
+                                            soundEffect.Play(1.0f, 0f, 0f);
+                                }
+
+                                if (keyboardState.IsKeyDown(Keys.Left) && !oldKeyboardState.IsKeyDown(Keys.Left))
+                                {
+                                    if (sounds[sounds.Find(bf => bf.name.Contains(Settings.soundsFile)).index].index > 0)
+                                        Settings.soundsFile = sounds[sounds.Find(bf => bf.name.Contains(Settings.soundsFile)).index - 1].name;
+
+                                    else Settings.soundsFile = sounds[sounds.Count - 1].name;
+
+
+                                    List<Menu.MenuElement> menusoundsList = new List<Menu.MenuElement>();
+                                    int i = 1;
+                                    int key = 65;
+                                    foreach (Sounds.SoundElement soundsElem in sounds.Find(x => x.name.Contains(Settings.soundsFile)).soundElements)
+                                    {
+                                        if (key > 65 + 25) key = 65;
+                                        if (soundsElem.name != "NULL.RAW")
+                                        {
+                                            menusoundsList.Add(new Menu.MenuElement(i, Menu.MenuState.normal, soundsElem.name, i.ToString(),
+                                                (Keys)Enum.ToObject(typeof(Keys), key++)));
+                                            i++;
+                                        }
+                                    }
+                                    soundsMenu = new Menu(spritesSheets.Find(x => x.name.Contains("MFONT2")), menusoundsList, new Vector2(35, 35), 200, 120);
+                                    soundsMenu.SetColors(Color.DarkGray, Color.Gold, Color.LightGoldenrodYellow);
+
+                                }
+                                if (keyboardState.IsKeyDown(Keys.Right) && !oldKeyboardState.IsKeyDown(Keys.Right))
+                                {
+                                    if (sounds[sounds.Find(bf => bf.name.Contains(Settings.soundsFile)).index].index + 1 < sounds.Count)
+                                        Settings.soundsFile = sounds[sounds.Find(bf => bf.name.Contains(Settings.soundsFile)).index + 1].name;
+
+                                    else Settings.soundsFile = sounds[0].name;
+
+                                    List<Menu.MenuElement> menusoundsList = new List<Menu.MenuElement>();
+                                    int i = 1;
+                                    int key = 65;
+                                    foreach (Sounds.SoundElement soundsElem in sounds.Find(x => x.name.Contains(Settings.soundsFile)).soundElements)
+                                    {
+                                        if (key > 65 + 25) key = 65;
+                                        if (soundsElem.name != "NULL.RAW")
+                                        {
+                                            menusoundsList.Add(new Menu.MenuElement(i, Menu.MenuState.normal, soundsElem.name, i.ToString(),
+                                                (Keys)Enum.ToObject(typeof(Keys), key++)));
+                                            i++;
+                                        }
+                                    }
+                                    soundsMenu = new Menu(spritesSheets.Find(x => x.name.Contains("MFONT2")), menusoundsList, new Vector2(35, 35), 200, 120);
+                                    soundsMenu.SetColors(Color.DarkGray, Color.Gold, Color.LightGoldenrodYellow);
+
+
+                                }
+
+                                break;
+                                #endregion
 
                         }
                         break;
 
                 }
- 
-
-                /**************** TILES ************/
-                //if (gameState == GameState.playing && screenState == ScreenState.tiles) map.UpdateTile(mouseState.X / Settings.PIXEL_RATIO, mouseState.Y / Settings.PIXEL_RATIO, tileIndex);
-
-
             }
 
             if (keyboardState.IsKeyDown(Keys.H) && !oldKeyboardState.IsKeyDown(Keys.H))
@@ -964,16 +1062,7 @@ namespace BullfrogExplorer
 
             #endregion
 
-            #region * TILES UPDATE *
-            /**************** TILES ************/
-            if (gameState == GameState.playing && screenState == ScreenState.tiles)
-            {
-                map.Update(gameTime);
-                newTile = spritesSheets.Find(x => x.name == "MBLK").spriteElements[tileIndex].sprite;
-            }
-            #endregion
-
-            mousePointer = spritesSheets.Find(x => x.name.Contains(Settings.mousePointerSpritesheet)).spriteElements[Settings.mousePointerIndex].sprite;
+             mousePointer = spritesSheets.Find(x => x.name.Contains(Settings.mousePointerSpritesheet)).spriteElements[Settings.mousePointerIndex].sprite;
 
             base.Update(gameTime);
         }
@@ -1025,6 +1114,19 @@ namespace BullfrogExplorer
 
                 switch (screenState)
                 {
+                    case ScreenState.sounds:
+                        #region - DRAW SOUNDS MENU -
+                        spriteBatch.Draw(backgrounds.Find(bf => bf.name.Contains(Indexes.sounds.background)).picture, new Vector2(
+                            (graphics.PreferredBackBufferWidth - (float)backgrounds.Find(BF => BF.name.Contains(Indexes.sounds.background)).picture.Width * Settings.scaleX) / 2 / Settings.scaleX, 
+                            0), Color.White);
+                        soundsMenu.SetPosition(new Vector2((float)((graphics.PreferredBackBufferWidth - (float)(backgrounds.Find(Fit => Fit.name.Contains(Indexes.sounds.background)).picture.Width) * Settings.scaleX) / 2 / Settings.scaleX)
+                            +35,35));
+                        //Vector2(35, 35)
+                        soundsMenu.Draw(spriteBatch);
+                        break;
+                    #endregion
+
+
                     case ScreenState.credits:
                         #region - DRAW CREDITS -
                         spriteBatch.Draw(backgrounds.Find(bf => bf.name.Contains(Indexes.credits.background)).picture, 
@@ -1372,9 +1474,29 @@ namespace BullfrogExplorer
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("TEXTS")).content,
                                 new Vector2(4, graphics.PreferredBackBufferHeight - 22), Color.White);
                             break;
+                        #endregion
+
+                        case ScreenState.sounds:
+
+                            #region - FOOTER SOUNDS  - 
+                            posX = 0;
+                            spriteBatch.DrawString(_font, Settings.soundsFile,
+                                                new Vector2(6 + posX, graphics.PreferredBackBufferHeight - 42), Color.Black);
+
+                            Color color = Color.DarkGray;
+
+                            spriteBatch.DrawString(_font, Settings.soundsFile,
+                                new Vector2(4 + posX, graphics.PreferredBackBufferHeight - 44), color);
+                            posX = posX + 4 + _font.MeasureString(Settings.soundsFile).X;
+
+                            spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("SOUNDS")).content,
+                                new Vector2(6, graphics.PreferredBackBufferHeight - 20), Color.Black);
+
+                            spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("SOUNDS")).content,
+                                new Vector2(4, graphics.PreferredBackBufferHeight - 22), Color.White);
+                            break;
                             #endregion
 
-                          
                     }
                 }
 
