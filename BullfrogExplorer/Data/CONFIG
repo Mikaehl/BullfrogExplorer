@@ -1,6 +1,8 @@
 DATAPATH=f:\Games\GOG\Theme Park\GAME\DATA\
-FULLSCREEN=Y
-PLAYINTRO=Y
-;POSITION=2240,190,sorry hate to move the window myself each time, hope I've removed this in the release
+FULLSCREEN=N
+PLAYINTRO=N
+POSITION=80,80,2240,190,sorry hate to move the window myself each time, hope I've removed this in the release
+WINDOW=1280x768
+RESOLUTION=1920x1200
 LANG=ENGLISH
 NAV=ZSQD;Up Down Left Right

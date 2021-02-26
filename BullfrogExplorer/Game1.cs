@@ -149,14 +149,34 @@ namespace BullfrogExplorer
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferMultiSampling = true;
             graphics.PreferMultiSampling = false;
-            graphics.PreferredBackBufferWidth = Settings.SCREEN_WIDTH; 
-            graphics.PreferredBackBufferHeight= Settings.SCREEN_HEIGHT; 
 
-            // En vrai dans Settings mais bon
-            float scaleX = graphics.PreferredBackBufferWidth / CONST.TARGETWIDTH;
-            float scaleY = graphics.PreferredBackBufferHeight / CONST.TARGETHEIGHT;
-            Scale = Matrix.CreateScale(new Vector3(scaleX, scaleY, 1));
-            graphics.IsFullScreen = Settings.Fullscreen;
+
+            
+
+            if (Settings.Fullscreen)
+            {
+                graphics.PreferredBackBufferWidth = Settings.SCREEN_WIDTH;
+                graphics.PreferredBackBufferHeight = Settings.SCREEN_HEIGHT;
+
+                Settings.scaleY = (float)graphics.PreferredBackBufferHeight / CONST.TARGETHEIGHT;
+                Settings.scaleX = (float)graphics.PreferredBackBufferHeight * (float)4 / 3 / CONST.TARGETWIDTH;
+
+                Scale = Matrix.CreateScale(new Vector3(Settings.scaleX, Settings.scaleY, 1));
+                graphics.IsFullScreen = Settings.Fullscreen;
+            }
+            else
+            {
+                graphics.PreferredBackBufferWidth = Settings.windowWidth;
+                graphics.PreferredBackBufferHeight = Settings.windowHeight;
+
+                // En vrai dans Settings mais bon
+                /*float scaleX = graphics.PreferredBackBufferWidth / CONST.TARGETWIDTH;
+                float scaleY = graphics.PreferredBackBufferHeight / CONST.TARGETHEIGHT;*/
+                Settings.scaleY = (float)graphics.PreferredBackBufferHeight / CONST.TARGETHEIGHT;
+                Settings.scaleX = (float)graphics.PreferredBackBufferHeight * (float)4 / 3 / CONST.TARGETWIDTH;
+                graphics.PreferredBackBufferWidth = (int)(graphics.PreferredBackBufferHeight * (float)4 / 3);
+                Scale = Matrix.CreateScale(new Vector3(Settings.scaleX, Settings.scaleY, 1));
+            }
 
             Content.RootDirectory = "Content";
         
@@ -442,7 +462,37 @@ namespace BullfrogExplorer
 
             if ((keyboardState.IsKeyDown(Keys.LeftAlt) && keyboardState.IsKeyDown(Keys.Enter)) && !oldKeyboardState.IsKeyDown(Keys.Enter))
             {
-                graphics.ToggleFullScreen();
+                Settings.Fullscreen = !Settings.Fullscreen;
+                if (Settings.Fullscreen)
+                {
+                    graphics.PreferredBackBufferWidth = Settings.SCREEN_WIDTH;
+                    graphics.PreferredBackBufferHeight = Settings.SCREEN_HEIGHT;
+
+                    Settings.scaleY = (float)graphics.PreferredBackBufferHeight / CONST.TARGETHEIGHT;
+                    Settings.scaleX = (float)graphics.PreferredBackBufferHeight * (float)4 / 3 / CONST.TARGETWIDTH;
+
+                    Scale = Matrix.CreateScale(new Vector3(Settings.scaleX, Settings.scaleY, 1));
+                    graphics.IsFullScreen = Settings.Fullscreen;
+                    graphics.ApplyChanges();
+                }
+                else
+                {
+                    graphics.PreferredBackBufferWidth = Settings.windowWidth;
+                    graphics.PreferredBackBufferHeight = Settings.windowHeight;
+
+                    // En vrai dans Settings mais bon
+                    /*float scaleX = graphics.PreferredBackBufferWidth / CONST.TARGETWIDTH;
+                    float scaleY = graphics.PreferredBackBufferHeight / CONST.TARGETHEIGHT;*/
+                    Settings.scaleY = (float)graphics.PreferredBackBufferHeight / CONST.TARGETHEIGHT;
+                    Settings.scaleX = (float)graphics.PreferredBackBufferHeight * (float)4 / 3 / CONST.TARGETWIDTH;
+
+                    graphics.PreferredBackBufferWidth = (int)(graphics.PreferredBackBufferHeight * (float)4 / 3);
+                    Scale = Matrix.CreateScale(new Vector3(Settings.scaleX, Settings.scaleY, 1));
+
+                    graphics.IsFullScreen = Settings.Fullscreen;
+                    graphics.ApplyChanges();
+
+                }
             }
 
 
@@ -758,6 +808,12 @@ namespace BullfrogExplorer
                                         done = true;
                                     }
                                 }
+                                if (keyboardState.IsKeyDown(Keys.F12) && !oldKeyboardState.IsKeyDown(Keys.F12))
+                                {
+                                    testsprite.ToggleDebug();
+                                }
+
+
                                 if (keyboardState.IsKeyDown(Keys.Add) && !oldKeyboardState.IsKeyDown(Keys.Add))
                                 {
                                     testsprite.Faster();
@@ -943,7 +999,8 @@ namespace BullfrogExplorer
             if (gameState == GameState.intro)
             {
 
-                spriteBatch.Draw(backgrounds.Find(x => x.name.Contains("MMENU-0")).picture, new Vector2(0, 0), Color.White * Settings.introMyAlphaValue);
+                spriteBatch.Draw(backgrounds.Find(x => x.name.Contains("MMENU-0")).picture, 
+                    new Vector2((graphics.PreferredBackBufferWidth - (float)backgrounds.Find(x => x.name.Contains("MMENU-0")).picture.Width * Settings.scaleX) / 2 / Settings.scaleX, 0), Color.White * Settings.introMyAlphaValue);
 
             }
             #endregion
@@ -953,7 +1010,10 @@ namespace BullfrogExplorer
             {
                 // --------------- MENU
 
-                spriteBatch.Draw(backgrounds.Find(x => x.name.Contains("MMENU-1")).picture, new Vector2(0, 0), Color.White);
+                spriteBatch.Draw(backgrounds.Find(x => x.name.Contains("MMENU-1")).picture,
+                    new Vector2((graphics.PreferredBackBufferWidth - (float)backgrounds.Find(BF => BF.name.Contains("MMENU-1")).picture.Width * Settings.scaleX) / 2 / Settings.scaleX, 0),
+                    Color.White);
+                menu.SetPosition(new Vector2((graphics.PreferredBackBufferWidth - 320 * Settings.scaleX) / 2 / Settings.scaleX+80, 85));
                 menu.Draw(spriteBatch);
             }
             #endregion
@@ -967,7 +1027,9 @@ namespace BullfrogExplorer
                 {
                     case ScreenState.credits:
                         #region - DRAW CREDITS -
-                        spriteBatch.Draw(backgrounds.Find(bf => bf.name.Contains(Indexes.credits.background)).picture, new Vector2(0, 0), Color.White);
+                        spriteBatch.Draw(backgrounds.Find(bf => bf.name.Contains(Indexes.credits.background)).picture, 
+                            new Vector2((graphics.PreferredBackBufferWidth - (float)backgrounds.Find(BF => BF.name.Contains("MMENU-1")).picture.Width * Settings.scaleX) / 2 / Settings.scaleX, 0),
+                            Color.White);
                         
                         text.SetPosition(Indexes.credits.position);
 
@@ -981,9 +1043,19 @@ namespace BullfrogExplorer
                         {
                             while (texts.Find(tf => tf.name == Settings.Lang).sentences.Find(sf => sf.index == Indexes.credits.currentIndex + c_c).text != "+" && c_c < 99)
                             {
-
+                                // (1920 - 320 * 5) / 2 / 5 + 320
                                 string t = texts.Find(tf => tf.name == Settings.Lang).sentences.Find(sf => sf.index == Indexes.credits.currentIndex + c_c).text;
-                                text.SetPosition((CONST.TARGETWIDTH - text.SizeOf(t).X) / 2, text.position.Y);
+
+                                float offset = (float)((graphics.PreferredBackBufferWidth - (float)(backgrounds.Find(Fit => Fit.name.Contains("MMENU-1")).picture.Width) * Settings.scaleX) / 2 / Settings.scaleX);
+                                text.SetPosition(
+                                    (float)(
+                                    //CONST.TARGETWIDTH 
+                                    offset * 2
+                                    // Don't ask, need to clear that, later.
+                                    + 320
+                                    //(graphics.PreferredBackBufferWidth - (float)320 * Settings.scaleX) / 2 / Settings.scaleX + 320
+                                    - text.SizeOf(t).X) / 2, 
+                                    text.position.Y);
                                 text.WriteLine(spriteBatch, t, Color.White);
                                 c_c++;
                             }
@@ -994,7 +1066,9 @@ namespace BullfrogExplorer
 
                     case ScreenState.about:
                         #region - DRAW ABOUT -
-                        spriteBatch.Draw(backgrounds.Find(bf => bf.name.Contains("MMENU-1")).picture, new Vector2(0, 0), Color.White);
+                        spriteBatch.Draw(backgrounds.Find(bf => bf.name.Contains("MMENU-1")).picture, 
+                            new Vector2((graphics.PreferredBackBufferWidth - (float)backgrounds.Find(F => F.name.Contains("MMENU-0")).picture.Width * Settings.scaleX) / 2 / Settings.scaleX, 0),
+                            Color.White);
                         if (screenState == ScreenState.about)
                         {
                             spriteBatch.End();
@@ -1005,7 +1079,9 @@ namespace BullfrogExplorer
 
                             //spriteBatch.DrawString(_font, "eיייי", new Vector2(0,0), Color.Black);
 
-                            Vector2 aboutPosition = new Vector2(Settings.aboutText.X * Settings.PIXEL_RATIO, Settings.aboutText.Y * Settings.PIXEL_RATIO);
+//                            menu.SetPosition(new Vector2((graphics.PreferredBackBufferWidth - 320 * Settings.scaleX) / 2 / Settings.scaleX + 80, 85));
+
+                            Vector2 aboutPosition = new Vector2((graphics.PreferredBackBufferWidth - 320 * Settings.scaleX) / 2 / Settings.scaleX + Settings.aboutText.X , Settings.aboutText.Y * Settings.scaleY);
                             foreach (Text.Sentence sentence in aboutList)
                             {
                                 if (sentence.Text.Length > 0)
@@ -1019,7 +1095,7 @@ namespace BullfrogExplorer
 
                                     
                                     Vector2 v2 = _font.MeasureString(t);
-                                    aboutPosition.X = CONST.TARGETWIDTH * 4 / 2 - v2.X / 2;
+                                    aboutPosition.X = graphics.PreferredBackBufferWidth / 2 - v2.X / 2;
                                     spriteBatch.DrawString(_font, t, new Vector2(aboutPosition.X + 2, aboutPosition.Y + 2), Color.Black);
                                     spriteBatch.DrawString(_font, t, aboutPosition, Color.White);
                                     aboutPosition.Y = aboutPosition.Y + v2.Y;
@@ -1060,9 +1136,9 @@ namespace BullfrogExplorer
                                 if (sentence.text.Length > 0)
                                 {
                                     Vector2 v2 = _font.MeasureString(sentence.text);
-                                    if (txtPosition.Y + v2.Y +40> CONST.TARGETHEIGHT*4)
+                                    if (txtPosition.Y + v2.Y +40> graphics.PreferredBackBufferHeight)
                                     {
-                                        if (txtPosition.X + v2.X < CONST.TARGETWIDTH*4)
+                                        if (txtPosition.X + v2.X < graphics.PreferredBackBufferWidth)
                                         {
                                             txtPosition.X = txtPosition.X + maxX + 40;
                                             txtPosition.Y = texts.Find(bf => bf.name.Contains(Settings.Lang)).position.Y;
@@ -1114,10 +1190,12 @@ namespace BullfrogExplorer
                     case ScreenState.backgrounds:
                         #region ** DRAW screenState BACKGROUNDS **
                         // --------------- BACKGROUND
-                        spriteBatch.Draw(backgrounds[Settings.backpict].picture, new Vector2(0, 0), Color.White);
+                        
+
+                        spriteBatch.Draw(backgrounds[Settings.backpict].picture, new Vector2((graphics.PreferredBackBufferWidth - (float)backgrounds[Settings.backpict].picture.Width*Settings.scaleX)/ 2 /  Settings.scaleX, 0), Color.White);
                         filename = backgrounds[Settings.backpict].name;
                         break;
-                    #endregion
+                    #endregion   
 
                     case ScreenState.sprites:
                         #region ** screenState SPRITES **                
@@ -1135,7 +1213,8 @@ namespace BullfrogExplorer
                                     spritesSheets[Settings.spritesheet].spriteElements[i + Settings.firstsprite].sprite.Height > 1
                                     )
                                 {
-                                    if (x + spritesSheets[Settings.spritesheet].spriteElements[i + Settings.firstsprite].sprite.Width - spritesSheets[Settings.spritesheet].viewport.X > Settings.SCREEN_WIDTH / 4)
+                                    if (x + spritesSheets[Settings.spritesheet].spriteElements[i + Settings.firstsprite].sprite.Width - spritesSheets[Settings.spritesheet].viewport.X > graphics.PreferredBackBufferWidth / Settings.scaleX)
+                                        //Settings.SCREEN_WIDTH / 4)
                                     {
                                         x = spritesSheets[Settings.spritesheet].viewport.X;
                                         y = y + height + spacer;
@@ -1160,7 +1239,7 @@ namespace BullfrogExplorer
                                 }
                             }
 
-                            if (y > Settings.SCREEN_HEIGHT / 4)
+                            if (y > graphics.PreferredBackBufferHeight / Settings.scaleY)//Settings.SCREEN_HEIGHT / 4)
                             {
                                 break;
                             }
@@ -1224,14 +1303,15 @@ namespace BullfrogExplorer
                             #region - FOOTER BACKGROUNDS -
                             spriteBatch.DrawString(_font, filename,
                                                 new Vector2(6, 200 * 4 - 42), Color.Black);
-
+                                                        
                             spriteBatch.DrawString(_font, filename,
-                                new Vector2(4, 200 * 4 - 44), Color.White);
+                                //new Vector2(4, 200 * 4 - 44), Color.White);
+                                new Vector2(4, graphics.PreferredBackBufferHeight - 44), Color.White);
 
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("BACKGROUND")).content,
-                                new Vector2(6, 200 * 4 - 20), Color.Black);
+                                new Vector2(6, graphics.PreferredBackBufferHeight - 20), Color.Black);
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("BACKGROUND")).content,
-                                new Vector2(4, 200 * 4 - 22), Color.White);
+                                new Vector2(4, graphics.PreferredBackBufferHeight - 22), Color.White);
                             break;
                             #endregion
 
@@ -1242,11 +1322,11 @@ namespace BullfrogExplorer
                                                 new Vector2(6, 200 * 4 - 42), Color.Black);
 
                             spriteBatch.DrawString(_font, filename,
-                                new Vector2(4, 200 * 4 - 44), Color.White);
+                                new Vector2(4, graphics.PreferredBackBufferHeight - 44), Color.White);
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("ANIMATIONS")).content,
-                                new Vector2(6, 200 * 4 - 20), Color.Black);
+                                new Vector2(6, graphics.PreferredBackBufferHeight - 20), Color.Black);
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("ANIMATIONS")).content,
-                            new Vector2(4, 200 * 4 - 22), Color.White);
+                            new Vector2(4, graphics.PreferredBackBufferHeight - 22), Color.White);
                             break;
                             #endregion
 
@@ -1257,11 +1337,11 @@ namespace BullfrogExplorer
                                                 new Vector2(6, 200 * 4 - 42), Color.Black);
 
                             spriteBatch.DrawString(_font, filename,
-                                new Vector2(4, 200 * 4 - 44), Color.White);
+                                new Vector2(4, graphics.PreferredBackBufferHeight - 44), Color.White);
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("SPRITES")).content,
-                                new Vector2(6, 200 * 4 - 20), Color.Black);
+                                new Vector2(6, graphics.PreferredBackBufferHeight - 20), Color.Black);
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("SPRITES")).content,
-                                new Vector2(4, 200 * 4 - 22), Color.White);
+                                new Vector2(4, graphics.PreferredBackBufferHeight - 22), Color.White);
                             break;
                             #endregion
 
@@ -1281,16 +1361,16 @@ namespace BullfrogExplorer
                                 if (filename == t.name) c = Color.White;
 
                                 spriteBatch.DrawString(_font, t.name,
-                                    new Vector2(4 + posX, 200 * 4 - 44), c);
+                                    new Vector2(4 + posX, graphics.PreferredBackBufferHeight - 44), c);
                                 posX = posX +4 + _font.MeasureString(t.name).X;
 
                             }
 
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("TEXTS")).content,
-                                new Vector2(6, 200 * 4 - 20), Color.Black);
+                                new Vector2(6, graphics.PreferredBackBufferHeight - 20), Color.Black);
 
                             spriteBatch.DrawString(_font, footerList.Find(x => x.name.Contains("TEXTS")).content,
-                                new Vector2(4, 200 * 4 - 22), Color.White);
+                                new Vector2(4, graphics.PreferredBackBufferHeight - 22), Color.White);
                             break;
                             #endregion
 

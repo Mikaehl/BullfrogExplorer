@@ -27,6 +27,11 @@ namespace BullfrogExplorer.Engines
 
         public enum MenuState { normal, hilight, grey};
       
+        public void SetPosition(Vector2 position)
+        {
+            this.position = position;
+        }
+
         public class MenuElement
         {
             public int Index;

@@ -21,6 +21,7 @@ namespace BullfrogExplorer.Engines
         private TimeSpan delay;
         private TimeSpan previousFrame;
         private TimeSpan delayStep = TimeSpan.FromSeconds(0.025f);
+        private int animationIndex = 0;
 
         private bool replaceGuest = false; // temporary dirty thing
 
@@ -80,6 +81,7 @@ namespace BullfrogExplorer.Engines
                 this.frame.width = this.spritesFrames[this.currentFrame].width;
                 this.frame.height = this.spritesFrames[this.currentFrame].height;
                 this.play = true;
+                this.animationIndex = i;
             }
         }
 
@@ -97,6 +99,7 @@ namespace BullfrogExplorer.Engines
                 this.Location = new Point(CONST.TARGETWIDTH / 2, (CONST.TARGETHEIGHT / 2) + spritesFrames[currentFrame - 1].height / 4);
                 if (this.debug) Console.WriteLine("Frame.height:" + this.frame.height + " Frame.width: " + this.frame.width + " Location.Y: " + Location.Y);
                 this.play = true;
+                this.animationIndex = i;
             }
         }
 
@@ -114,7 +117,14 @@ namespace BullfrogExplorer.Engines
                 this.frame.width = this.spritesFrames[this.currentFrame].width;
                 this.frame.height = this.spritesFrames[this.currentFrame].height;
                 this.play = true;
+                this.animationIndex = i;
             }
+        }
+
+        public bool ToggleDebug()
+        {
+            this.debug = !this.debug;
+            return this.debug;
         }
 
         public void ToggleIndex()
@@ -210,7 +220,11 @@ namespace BullfrogExplorer.Engines
 
             currentFrame = 1;
 
-            if (this.spritesFrames.Count > 0)  this.Location = new Point(CONST.TARGETWIDTH / 2, (CONST.TARGETHEIGHT / 2) + spritesFrames[currentFrame-1].height / 4);
+            if (this.spritesFrames.Count > 0)
+            {
+                this.Location = new Point(CONST.TARGETWIDTH / 2, (CONST.TARGETHEIGHT / 2) + spritesFrames[currentFrame - 1].height / 4);
+                this.animationIndex = i;
+            }
         }
 
 
@@ -232,7 +246,7 @@ namespace BullfrogExplorer.Engines
                 int j = 1;
                 foreach (SpriteElement spriteElement in spriteFrame.spritesElements)
                 {
-                    if (this.debug) Console.WriteLine(" SpriteElement: " + j + " sprite addr: " + spriteElement.sprite + " x: " + spriteElement.xOffset + " y: " + spriteElement.yOffset + " flipped: " + spriteElement.xFlipped);
+                    if (this.debug) Console.WriteLine(" SpriteElement: " + j + " sprite: " + spriteElement.sprite / 6 + " x: " + spriteElement.xOffset + " y: " + spriteElement.yOffset + " flipped: " + spriteElement.xFlipped);
                 }
 
             }
@@ -367,12 +381,17 @@ namespace BullfrogExplorer.Engines
 
                     }
 
+                    //Console.WriteLine("Current Animation: " + this.animationIndex + " spriteElement: " + elem);
+
                     // This is a Guest
                     if (elem != 0 && spriteElement.xFlipped > 127)
                     {   
                         if (j < this.guests.Count+1) 
                         {
-                            Console.WriteLine(j);
+
+                            
+                            
+                            //Console.WriteLine(j);
                             j++;
                             if (spriteElement.xFlipped == 129)
                             {

@@ -41,6 +41,16 @@ namespace BullfrogExplorer.Loaders
                         Settings.movement.Left = (Keys)Enum.Parse(typeof(Keys), c_s[1].Substring(2, 1), true);
                         Settings.movement.Right = (Keys)Enum.Parse(typeof(Keys), c_s[1].Substring(3, 1), true);
                         break;
+                    case "RESOLUTION":
+                        string[] resolution = c_s[1].Split('x');
+                        Settings.SCREEN_WIDTH = int.Parse(resolution[0]); // I know, I know
+                        Settings.SCREEN_HEIGHT = int.Parse(resolution[1]); // same, same
+                        break;
+                    case "WINDOW":
+                        string[] window = c_s[1].Split('x');
+                        Settings.windowWidth = int.Parse(window[0]);
+                        Settings.windowHeight = int.Parse(window[1]);
+                        break;
                 }
             }
             return true;

@@ -13,7 +13,7 @@ namespace BullfrogExplorer.Loaders
     {
         private bool debug = false;
         public string name;
-
+        private bool dumpValues = true;
         public struct AnimLabel
         {
             public int index;

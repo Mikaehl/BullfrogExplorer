@@ -17,6 +17,11 @@ namespace BullfrogExplorer.Data
         public static int PIXEL_RATIO = 4;
         public static int SCREEN_WIDTH = 320 * PIXEL_RATIO;
         public static int SCREEN_HEIGHT = 200 * PIXEL_RATIO;
+        public static float scaleX = 4;
+        public static float scaleY = 4;
+
+        public static int windowWidth = 320 * PIXEL_RATIO;
+        public static int windowHeight = 200 * PIXEL_RATIO;
 
         public static Color BACKGROUND_COLOR = Color.Black;
 
