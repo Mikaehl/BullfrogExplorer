@@ -164,7 +164,7 @@ namespace BullfrogExplorer.Engines
                             break;
                         }
                     }
-                    if (menuList[i].Area.Intersects(new Rectangle(new Point(ms.Position.X / Settings.PIXEL_RATIO, ms.Position.Y / Settings.PIXEL_RATIO), new Point(1, 1))))
+                    if (menuList[i].Area.Intersects(new Rectangle(new Point((int)(ms.Position.X / Settings.scaleX), (int)(ms.Position.Y / Settings.scaleY)), new Point(1, 1))))
                     {
                         menuList[i].State = MenuState.hilight;
                         if (ms.LeftButton == ButtonState.Pressed)

@@ -918,7 +918,7 @@ namespace BullfrogExplorer
                                 if (keyboardState.IsKeyDown(Keys.Up))
                                 {
                                     /**************** TILES ************/
-                                    if (map.viewport.Y + map.viewport.Height / Settings.PIXEL_RATIO < (map.Height - 1) * map.TileHeight) map.viewport.Y++;
+                                    if (map.viewport.Y + map.viewport.Height / Settings.scaleY < (map.Height - 1) * map.TileHeight) map.viewport.Y++;
                                 }
                                 if (keyboardState.IsKeyDown(Keys.Down))
                                 {
@@ -928,7 +928,7 @@ namespace BullfrogExplorer
                                 if (keyboardState.IsKeyDown(Keys.Left))
                                 {
                                     /**************** TILES ************/
-                                    if (map.viewport.X + map.viewport.Width / Settings.PIXEL_RATIO < (map.Width - 1) * map.TileWidth) map.viewport.X++;
+                                    if (map.viewport.X + map.viewport.Width / Settings.scaleX < (map.Width - 1) * map.TileWidth) map.viewport.X++;
                                     //Console.WriteLine("map.viewport.X=" + map.viewport.X + " map.viewport.Width=" + map.viewport.Width + " map.=" + (map.Width * map.TileWidth));
                                 }
                                 if (keyboardState.IsKeyDown(Keys.Right))
@@ -1368,7 +1368,7 @@ namespace BullfrogExplorer
                         spriteBatch.Draw(spritesSheets.Find(x => x.name == "MPANEL").spriteElements[i].sprite,
                             new Vector2(
                                 toolbarX,
-                                Settings.SCREEN_HEIGHT / Settings.PIXEL_RATIO - spritesSheets.Find(x => x.name == "MPANEL").spriteElements[i].sprite.Height
+                                Settings.SCREEN_HEIGHT / Settings.scaleY - spritesSheets.Find(x => x.name == "MPANEL").spriteElements[i].sprite.Height
                             ),
                             Color.White);
                         toolbarX = toolbarX + spritesSheets.Find(x => x.name == "MPANEL").spriteElements[i].sprite.Width;
@@ -1378,7 +1378,7 @@ namespace BullfrogExplorer
                     for (int i = 0; i < 6; i++)
                     {
                         spriteBatch.Draw(spritesSheets.Find(x => x.name == "MBLK").spriteElements[i + tileIndex].sprite,
-                            new Vector2(4 + toolbarTilesX, Settings.SCREEN_HEIGHT / Settings.PIXEL_RATIO - 20), Color.White);
+                            new Vector2(4 + toolbarTilesX, Settings.SCREEN_HEIGHT / Settings.scaleY - 20), Color.White);
                         toolbarTilesX = toolbarTilesX +
                             spritesSheets.Find(x => x.name == "MBLK").spriteElements[i + tileIndex].sprite.Width;
                     }
@@ -1514,7 +1514,7 @@ namespace BullfrogExplorer
                       null, null, null, Scale);
 
                 /***************** MOUSE POINTER ******************************/
-                spriteBatch.Draw(mousePointer, new Vector2(mouseState.X / Settings.PIXEL_RATIO, mouseState.Y / Settings.PIXEL_RATIO), Color.White);
+                spriteBatch.Draw(mousePointer, new Vector2(mouseState.X / Settings.scaleX, mouseState.Y / Settings.scaleY), Color.White);
 
             }
             
