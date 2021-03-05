@@ -18,6 +18,9 @@ namespace BullfrogExplorer.Loaders
         public int index;
         public string name;
         public Texture2D picture;
+        private int width = 320;
+        private int height = 200;
+
         
         public Background()
         {
@@ -48,34 +51,39 @@ namespace BullfrogExplorer.Loaders
                 using (FileStream fs = File.OpenRead(path))
                 {
 
-                    int width = 320;
-                    int height = 200;
 
-                    byte[] buffer = new byte[width * height];
+                    byte[] buffer = new byte[this.width * this.height];
                     fs.Read(buffer, 0, buffer.Length);
 
                     int red = 0;
                     int green = 1;
                     int blue = 2;
                     int mult = 4;
+                    int offset = 0;
 
-                    Color[] Picture = new Color[width * height];
+                    Color[] Picture = new Color[this.width * this.height];
                     // je parcours le tableau image et j'y met chaque pixel sous le format color en créant un enregistrement color via
                     //la palette. Je vais chercher dans la palette, les rgb correspondant à l'octet inscrit dans mon tableau buffer.
-                    for (var i = 0; i < width * height; i++)
+                    for (var i = 0; i < this.width * this.height; i++)
                     {
 
-                        if (buffer[i] == 0)
+                        if (path.Contains("BUSTED")) offset = 25;
+                        if (path.Contains("TAKOVER")) offset = 26;
+                        if (i > offset)
                         {
-                            Picture[i].A = 0;
-                        }
-                        else
-                        {
-                            Picture[i] = new Color(palette.palette[buffer[i] * 3 + red] * mult, palette.palette[buffer[i] * 3 + green] * mult, palette.palette[buffer[i] * 3 + blue] * mult);
+                            // modoficated file for some reasons (palette hints I guess)
+                            if (buffer[i] == 0)
+                            {
+                                Picture[i].A = 0;
+                            }
+                            else
+                            {
+                                Picture[i - offset] = new Color(palette.palette[buffer[i] * 3 + red] * mult, palette.palette[buffer[i] * 3 + green] * mult, palette.palette[buffer[i] * 3 + blue] * mult);
+                            }
                         }
                     }
 
-                    Texture2D pict = new Texture2D(this.graphicsDevice, width, height);
+                    Texture2D pict = new Texture2D(this.graphicsDevice, this.width, this.height);
                     pict.SetData(Picture);
                     this.picture = pict;
                     string[] fn = fs.Name.Split('\\');

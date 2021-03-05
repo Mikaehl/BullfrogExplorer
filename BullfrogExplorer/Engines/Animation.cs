@@ -45,7 +45,7 @@ namespace BullfrogExplorer.Engines
             }
         }
 
-        Frame frame;
+        public Frame frame;
 
         public struct Guest
         {
@@ -71,15 +71,15 @@ namespace BullfrogExplorer.Engines
         {
 
             this.LoadFrames(a.GetFrames(i));
+            currentFrame = 1;
             if (this.spritesFrames.Count > 0)
             {
-                this.currentFrame = 1;
                 this.graphicsDevice = gd;
                 this.Delay(0.15f);
                 this.guests = lg;
                 this.Location = p;
-                this.frame.width = this.spritesFrames[this.currentFrame].width;
-                this.frame.height = this.spritesFrames[this.currentFrame].height;
+                this.frame.width = this.spritesFrames[this.currentFrame-1].width;
+                this.frame.height = this.spritesFrames[this.currentFrame-1].height;
                 this.play = true;
                 this.animationIndex = i;
             }
@@ -88,14 +88,17 @@ namespace BullfrogExplorer.Engines
         public Animation(GraphicsDevice gd, Animations a, int i)
         {
             this.LoadFrames(a.GetFrames(i));
+
+            this.PrintFrames();
+            currentFrame = 1;
+            
             if (this.spritesFrames.Count > 0)
             {
-                this.currentFrame = 1;
                 this.graphicsDevice = gd;
                 this.Delay(0.15f);
                 for (i = 0; i < 20; i++) { this.guests.Add(new Guest(1)); }
-                this.frame.width = this.spritesFrames[this.currentFrame].width;
-                this.frame.height = this.spritesFrames[this.currentFrame].height;
+                this.frame.width = this.spritesFrames[this.currentFrame-1].width;
+                this.frame.height = this.spritesFrames[this.currentFrame-1].height;
                 this.Location = new Point(CONST.TARGETWIDTH / 2, (CONST.TARGETHEIGHT / 2) + spritesFrames[currentFrame - 1].height / 4);
                 if (this.debug) Console.WriteLine("Frame.height:" + this.frame.height + " Frame.width: " + this.frame.width + " Location.Y: " + Location.Y);
                 this.play = true;
@@ -103,19 +106,20 @@ namespace BullfrogExplorer.Engines
             }
         }
 
+
         public Animation(GraphicsDevice gd, Animations a, int i, Point p)
         {
 
             this.LoadFrames(a.GetFrames(i));
+            currentFrame = 1;
             if (this.spritesFrames.Count > 0)
             {
-                this.currentFrame = 1;
                 this.graphicsDevice = gd;
                 this.Delay(0.15f); // 15 millisecondes before next frame
                 for (i = 0; i < 20; i++) { this.guests.Add(new Guest(1)); }
                 this.Location = p;
-                this.frame.width = this.spritesFrames[this.currentFrame].width;
-                this.frame.height = this.spritesFrames[this.currentFrame].height;
+                this.frame.width = this.spritesFrames[this.currentFrame-1].width;
+                this.frame.height = this.spritesFrames[this.currentFrame-1].height;
                 this.play = true;
                 this.animationIndex = i;
             }
@@ -255,15 +259,15 @@ namespace BullfrogExplorer.Engines
         }
 
 
-        public void Update(GameTime g)
+        public void Update(GameTime gameTime)
         {
             if (this.play || this.next)
             {
-                if (g.TotalGameTime - previousFrame > delay)
+                if (gameTime.TotalGameTime - this.previousFrame > this.delay)
                 {
                     currentFrame++;
-                    if (currentFrame > spritesFrames.Count) currentFrame = 1;
-                    previousFrame = g.TotalGameTime;
+                    if (this.currentFrame > this.spritesFrames.Count) currentFrame = 1;
+                    this.previousFrame = gameTime.TotalGameTime;
                 }
 
                 if (!this.play) this.next = false;
@@ -278,26 +282,32 @@ namespace BullfrogExplorer.Engines
             int drawnPeons = 0;
             int elemIndex = 0;
 
-            /*  ******  FRAME RECTANGLE ***
-            if (spritesFrames[currentFrame - 1].width > 0 && spritesFrames[currentFrame - 1].height > 0)
-            {
-                Rectangle FrameRect = new Rectangle(0, 0, spritesFrames[currentFrame - 1].width, spritesFrames[currentFrame - 1].height);
 
-                Color[] data = new Color[spritesFrames[currentFrame - 1].width * spritesFrames[currentFrame - 1].height];
-
-                for (int i = 0; i < data.Length; i++)//loop through all the colors setting them to whatever values we want
-                {
-                    data[i] = new Color(255, 255, 255, 255); ;
-                }
-                Texture2D tex = new Texture2D(graphicsDevice, spritesFrames[currentFrame - 1].width, spritesFrames[currentFrame - 1].height);
-                tex.SetData(data);
-                sb.Draw(tex, new Vector2(Location.X - spritesFrames[currentFrame - 1].width/2, Location.Y - spritesFrames[currentFrame - 1].height), null, Color.White);
-            }
-            */
+            
 
             if (currentFrame - 1 < spritesFrames.Count())
             {
+
+                //  ******  FRAME RECTANGLE ***
+                /*
+                if (spritesFrames[currentFrame - 1].width > 0 && spritesFrames[currentFrame - 1].height > 0)
+                {
+                    Rectangle FrameRect = new Rectangle(0, 0, spritesFrames[currentFrame - 1].width, spritesFrames[currentFrame - 1].height);
+
+                    Color[] data = new Color[spritesFrames[currentFrame - 1].width * spritesFrames[currentFrame - 1].height];
+
+                    for (int i = 0; i < data.Length; i++)//loop through all the colors setting them to whatever values we want
+                    {
+                        data[i] = new Color(255, 255, 255, 255); ;
+                    }
+                    Texture2D tex = new Texture2D(graphicsDevice, spritesFrames[currentFrame - 1].width, spritesFrames[currentFrame - 1].height);
+                    tex.SetData(data);
+                    sb.Draw(tex, new Vector2(Location.X - spritesFrames[currentFrame - 1].width / 2, Location.Y - spritesFrames[currentFrame - 1].height), null, Color.White);
+                }
+                */
+
                 int j = 1;
+                int elementCounter = 1;
                 foreach (SpriteElement spriteElement in spritesFrames[currentFrame - 1].spritesElements)
                 {
 
@@ -432,12 +442,14 @@ namespace BullfrogExplorer.Engines
 
                         if (drawIndex)
                         {
-                            sb.DrawString(_font, elem.ToString() + " // " + spriteElement.xFlipped.ToString(), xy, Color.Black, 0f, Vector2.One, 0.26f, SpriteEffects.None, 0f);
-                            sb.DrawString(_font, elem.ToString() + " // " + spriteElement.xFlipped.ToString(), xy, Color.White, 0f, Vector2.One, 0.25f, SpriteEffects.None, 0f);
+                            sb.DrawString(_font, "[" + elementCounter + "]" + elem.ToString() + " // " + spriteElement.xFlipped.ToString(), xy, Color.Black, 0f, Vector2.One, 0.21f, SpriteEffects.None, 0f);
+                            sb.DrawString(_font,"[" + elementCounter + "]" + elem.ToString() + " // " + spriteElement.xFlipped.ToString(), xy, Color.White, 0f, Vector2.One, 0.20f, SpriteEffects.None, 0f);
                         }
 
 
                     }
+
+                    elementCounter++;
 
                 }
             }

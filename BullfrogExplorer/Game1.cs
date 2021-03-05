@@ -130,6 +130,8 @@ namespace BullfrogExplorer
         Background back = new Background();
 
         Animation testsprite;
+        List<Animation> entitiesAnimation;
+        Point entitiesPosition = new Point(0,0);
 
         Matrix Scale;
 
@@ -290,6 +292,16 @@ namespace BullfrogExplorer
 
 
             testsprite = new Animation(GraphicsDevice, animations.Find(x => x.name.Contains(Settings.AnimationSerie)), Settings.currentanim);
+            
+            entitiesAnimation = new List<Animation>();
+
+            
+            
+            for (int anim = 1;anim < animations[0].spritesAnimations.Count;anim++)
+            {
+                entitiesAnimation.Add(new Animation(GraphicsDevice, animations.Find(x => x.name.Contains(Settings.AnimationSerie)), anim));
+            }
+
 
             #endregion
 
@@ -492,6 +504,22 @@ namespace BullfrogExplorer
             {
                 if (gameState == GameState.menu) Exit(); else gameState = GameState.menu;
             }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
+            {
+                Settings.scaleX -= 0.01f / 1.333333333f;
+                Settings.scaleY -= 0.01f;
+                
+                Scale = Matrix.CreateScale(new Vector3(Settings.scaleX, Settings.scaleY, 1));
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Add))
+            {
+                Settings.scaleX += 0.01f / 1.333333f;
+                Settings.scaleY += 0.01f;
+                Scale = Matrix.CreateScale(new Vector3(Settings.scaleX, Settings.scaleY, 1));
+            }
+
 
             if ((keyboardState.IsKeyDown(Keys.LeftAlt) && keyboardState.IsKeyDown(Keys.Enter)) && !oldKeyboardState.IsKeyDown(Keys.Enter))
             {
@@ -819,7 +847,8 @@ namespace BullfrogExplorer
                             case ScreenState.animations:
 
                                 if ((mouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton != ButtonState.Pressed) ||
-                                    keyboardState.IsKeyDown(Keys.X) && !oldKeyboardState.IsKeyDown(Keys.X))
+                                    keyboardState.IsKeyDown(Keys.X) && !oldKeyboardState.IsKeyDown(Keys.X) ||
+                                    (mouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue))
                                 {
                                     //Not sure what's the best way to do that.
                                     bool done=false;
@@ -833,10 +862,13 @@ namespace BullfrogExplorer
                                         testsprite.NewAnimation(animations.Find(x => x.name.Contains(Settings.AnimationSerie)), Settings.currentanim);
                                         testsprite.PrintFrames();
                                         done = true;
+
                                     }
                                 }
+
                                 if ((mouseState.RightButton == ButtonState.Pressed && oldMouseState.RightButton != ButtonState.Pressed) ||
-                                     keyboardState.IsKeyDown(Keys.W) && !oldKeyboardState.IsKeyDown(Keys.W))
+                                     keyboardState.IsKeyDown(Keys.W) && !oldKeyboardState.IsKeyDown(Keys.W) ||
+                                     (mouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue))
                                 {
                                     bool done = false;
                                     while (testsprite.spritesFrames.Count == 0 || !done)
@@ -880,18 +912,22 @@ namespace BullfrogExplorer
                                 if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Settings.movement.Up))
                                 {
                                     testsprite.Location.Y--;
+                                    entitiesPosition.Y--;
                                 }
                                 if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Settings.movement.Down))
                                 {
                                     testsprite.Location.Y++;
+                                    entitiesPosition.Y++;
                                 }
                                 if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Settings.movement.Left))
                                 {
                                     testsprite.Location.X--;
+                                    entitiesPosition.X--;
                                 }
                                 if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Settings.movement.Right))
                                 {
                                     testsprite.Location.X++;
+                                    entitiesPosition.X++;
                                 }
                                 if (keyboardState.IsKeyDown(Keys.Insert) && !oldKeyboardState.IsKeyDown(Keys.Insert))
                                 {
@@ -1058,7 +1094,18 @@ namespace BullfrogExplorer
             #region * ANIMATIONS UPDATE *
             ///// ANIMATIONS
 
-            if (gameState == GameState.playing && screenState == ScreenState.animations) testsprite.Update(gameTime);
+            if (gameState == GameState.playing && screenState == ScreenState.animations)
+            {
+                testsprite.Update(gameTime);
+                
+                for (int anim = 0; anim < entitiesAnimation.Count; anim++)
+                {
+                    entitiesAnimation[anim].Update(gameTime);
+                }
+
+            }
+
+
 
             #endregion
 
@@ -1355,6 +1402,45 @@ namespace BullfrogExplorer
                         
                         testsprite.Draw(spriteBatch, spritesSheets.Find(F => F.name.Contains("MSPR")), _font);
                         filename = animations.Find(xa => xa.name.Contains(Settings.AnimationSerie)).name + " - " + Settings.currentanim + " - " + animations.Find(xb => xb.name.Contains(Settings.AnimationSerie)).AnimationsLabels[Settings.currentanim - 1].label;
+
+
+
+                        int animOffset = 0;
+                        int animRow = 0;
+                        int maxHeight = 0;
+
+                        if (Settings.animPage)
+                        {
+
+
+                            for (int i = 0; i < entitiesAnimation.Count; i++)
+                            {
+
+
+                                entitiesAnimation[i].SetLocation(new Point(entitiesPosition.X + animOffset + entitiesAnimation[i].frame.width,
+                                    entitiesPosition.Y + animRow + entitiesAnimation[i].frame.height));
+
+                                if (entitiesPosition.Y + animRow + entitiesAnimation[i].frame.height > 0)
+                                {
+                                    //int deb = entitiesPosition.Y + animRow + entitiesAnimation[i].frame.height;
+                                    //Console.WriteLine("Drawing animation number " + i + " at: " + deb);
+                                    entitiesAnimation[i].Draw(spriteBatch, spritesSheets.Find(F => F.name.Contains("MSPR")), _font);
+                                }
+
+
+                                animOffset += entitiesAnimation[i].frame.width;
+                                if (maxHeight < entitiesAnimation[i].frame.height) maxHeight = entitiesAnimation[i].frame.height;
+                                if (animOffset + entitiesAnimation[i].frame.width > graphics.PreferredBackBufferWidth / Settings.scaleX)
+                                {
+                                    animOffset = 0;
+                                    animRow += maxHeight;
+                                    maxHeight = 0;
+                                }
+
+                                if (animRow > graphics.PreferredBackBufferHeight / Settings.scaleY - entitiesPosition.Y) break;
+                            }
+                        }
+                        
                         break;
                         #endregion
                 }
@@ -1404,7 +1490,7 @@ namespace BullfrogExplorer
 
                             #region - FOOTER BACKGROUNDS -
                             spriteBatch.DrawString(_font, filename,
-                                                new Vector2(6, 200 * 4 - 42), Color.Black);
+                                                new Vector2(6, graphics.PreferredBackBufferHeight - 42), Color.Black);
                                                         
                             spriteBatch.DrawString(_font, filename,
                                 //new Vector2(4, 200 * 4 - 44), Color.White);
@@ -1421,7 +1507,7 @@ namespace BullfrogExplorer
 
                             #region - FOOTER ANIMATIONS - 
                             spriteBatch.DrawString(_font, filename,
-                                                new Vector2(6, 200 * 4 - 42), Color.Black);
+                                                new Vector2(6, graphics.PreferredBackBufferHeight - 42), Color.Black);
 
                             spriteBatch.DrawString(_font, filename,
                                 new Vector2(4, graphics.PreferredBackBufferHeight - 44), Color.White);
@@ -1436,7 +1522,7 @@ namespace BullfrogExplorer
 
                             #region - FOOTER SPRITES - 
                             spriteBatch.DrawString(_font, filename,
-                                                new Vector2(6, 200 * 4 - 42), Color.Black);
+                                                new Vector2(6, graphics.PreferredBackBufferHeight - 42), Color.Black);
 
                             spriteBatch.DrawString(_font, filename,
                                 new Vector2(4, graphics.PreferredBackBufferHeight - 44), Color.White);
@@ -1456,7 +1542,7 @@ namespace BullfrogExplorer
                                 
 
                                 spriteBatch.DrawString(_font, t.name,
-                                                    new Vector2(6 + posX, 200 * 4 - 42), Color.Black);
+                                                    new Vector2(6 + posX, graphics.PreferredBackBufferHeight - 42), Color.Black);
 
                                 Color c = Color.DarkGray;
                                 

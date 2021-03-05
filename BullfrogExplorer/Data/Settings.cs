@@ -53,6 +53,7 @@ namespace BullfrogExplorer.Data
         public static bool showTiles = false;
         public static bool showMouse = false;
         public static bool showToolbar = false;
+        public static bool animPage = false; //not too easy to achieve a good page look
 
         public static int mousePointerIndex = 1;
         public static int backpict = 0;
