@@ -1,5 +1,5 @@
 # BullfrogExplorer
-Bullfrog Production games asset explorer. Currently only support Theme Park.
+Bullfrog Production games asset explorer. Currently only support Theme Park (Well and will probably ever only support Theme Park).
 
 # Introduction
 This program currently load almost all the the various data of the game excepted the music and video files.
