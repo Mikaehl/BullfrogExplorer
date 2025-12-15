@@ -15,10 +15,9 @@ This program currently use .NET Framework 4.5. The project is a Visual Studio 20
 Feel free to contribute either by adding other games or resolving some issues. The code is not really perfect but this could easily been ehanced.
 
 # Futur plans
-I may plan to add the music files and maybe the video as well. Later on, to include the support of other games, I will create a separate library called maybe Bullfrog Loader.
-Don't expect too much from myself as I'm not a professionnal developper, have a lot of various ideas for a lot of things and a lot of other interests.
+None!
 
-The music use the HMP format, I need a .NET midi library able to open and play them. I'm not to familiar with midi libraries, if you find and have some code able to load a HMP file, feel free to contribute (the data loader is ready, I've tested the data and there are correctly loaded).
+The music use the HMP format, I need a .NET midi library able to open and play them. I'm not too familiar with midi libraries, if you find and have some code able to load a HMP file, feel free to contribute (the data loader is ready, I've tested the data and there are correctly loaded).
 
 The movies are something like flic if I remember correctly some viewer exists, maybe I'll use a library if I find one.
 
